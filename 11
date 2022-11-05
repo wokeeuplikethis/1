@@ -1,0 +1,370 @@
+// Контрольная работа N 1.
+//Инкапсуляция.
+// Студент группы 415, Бердиев Э.М. 2022 год
+
+#include <iostream>
+#include <string>
+#include <fstream> //
+using namespace std;
+enum MENU { keyboardInput = 1, fileInput, quit };
+enum SUBMENU { listOfBooksByAuthor = 1, listOfBooksByPublishingOffice, listOfBooksByYearOfIssue, backToTheBeginning };
+enum SUBSUBMENU { saveDataOld = 1, notSaveDate };
+
+	class Book
+    {
+	private:
+		string bookname, name, lastName, patronymic, publishingoffice;
+		int yearOfIssue = 0;
+	public:
+		Book (string BName= "", 
+              string nameAuthor = "",
+			  string lastnameAuthor = "",
+			  string patronymicAuthor = "",
+			  string namePublishingOffice = "",
+			  int YearOfIssue = 0)
+        {   
+            bookname = BName;
+            name = nameAuthor;
+            lastName = lastnameAuthor;
+            patronymic = patronymicAuthor;
+            publishingoffice = namePublishingOffice;
+            yearOfIssue = YearOfIssue;
+        }
+  
+      
+		void getData() //функция getData в классе Book
+		   {
+			cout << "Данные: " << bookname <<endl << name << endl << lastName << endl << patronymic << endl;
+			cout << publishingoffice << endl << yearOfIssue << endl;
+		  }
+
+        string getBookName() {
+            return bookname;}
+
+        string getName() {
+            return name;}
+
+		string getLastName() { 
+            return lastName; }
+
+		string getPatronymic() { 
+            return patronymic; }
+
+		string getPublishingOffice() { 
+            return publishingoffice; }
+		int getYear() { 
+            return yearOfIssue; }
+       
+	
+};
+
+
+
+    void Subsubmenu(Book array[], int Size)
+    {
+        int thirdChoice = 0;
+        string secondFileAddress = "";
+        int inputinInput = 0;
+        do {
+            cout << "1 - Сохранить данные в файл" << endl;
+            cout << "2 - Вернуться в подменю" << endl;
+            cin >> thirdChoice;
+            ofstream secondFile;
+            switch (thirdChoice) {
+            case saveDataOld:
+                cout << "1 - Cохранить результат в существующий файл" << endl;
+                cout << "2 - Сохранить результат в новый файл" << endl;
+                cin >> inputinInput;
+                if (inputinInput == 1) {
+                    cout << "Название файла:" << endl;
+                    cin.get();
+                    getline(cin, secondFileAddress);
+                    secondFile.open(secondFileAddress, ofstream::trunc);
+                    for (int i = 0; i < Size; i++) {
+
+                        secondFile << array[i].getBookName() << endl  << array[i].getName() << endl << array[i].getLastName() << endl;
+                        secondFile << array[i].getPatronymic() << endl << array[i].getPublishingOffice() << endl;
+                        secondFile << array[i].getYear() << endl;
+
+                    }
+                    secondFile.close();
+                    cout << "Файл сохранён" << endl;
+                }
+                else if (inputinInput == 2) {
+                    string nameFile = "";
+                    cout << "Название файла:" << endl;
+                    cin >> nameFile;
+                    secondFile.open(nameFile);
+                    if (secondFile.is_open()) {
+                        for (int i = 0; i < Size; i++) {
+
+                            secondFile << array[i].getBookName() <<endl << array[i].getName() << endl << array[i].getLastName() << endl;
+                            secondFile << array[i].getPatronymic() << endl << array[i].getPublishingOffice() << endl;
+                            secondFile << array[i].getYear() << endl;
+                        }
+                    }
+                    else {
+                        cout << "Операция не удалась" << endl;
+                    }
+                    secondFile.close();
+                    cout << "Файл сохранён" << endl;
+                }
+                else {
+                    cout << "Пункта не существует!" << endl;
+                }
+                break;
+            case notSaveDate:
+                cout << "Данные не будут сохранены" << endl;
+                break;
+            default:
+                cout << "Пункт в меню не существует" << endl;
+                break;
+            }
+        } while (thirdChoice != notSaveDate);
+    }
+
+
+    void Submenu(Book array[], int Size)
+    {
+        int secondChoice = 0;
+        string NameAuthor = "";
+        string LastNameAuthor = "";
+        string PatronymicAuthor = "";
+        string NameOfPublishingOffice = "";
+        int minYearOfIssue = 0; //year of...
+        Book* resultArray;
+        int resultSize = 0;
+        do {
+            cout << "Перед вами подменю." << endl;
+            cout << "1 - Список книг,по имени автора. " << endl;
+            cout << "2 - Список книг,по издательству." << endl;
+            cout << "3 - Список книг,выпущенных после введеного года." << endl;
+            cout << "4 - Переход к начальному меню." << endl;
+            cin >> secondChoice;
+            switch (secondChoice) {
+            case listOfBooksByAuthor:
+                resultSize = 0;
+                cout << "Введите имя автора" << endl;
+                cin >> NameAuthor;
+                cin >> LastNameAuthor;
+                cin >> PatronymicAuthor;
+                for (int i = 0; i < Size; i++) {
+                    if (array[i].getName() == NameAuthor and array[i].getLastName() == LastNameAuthor 
+                        and array[i].getPatronymic() == PatronymicAuthor)
+                    {
+                      array[i].getData();
+                        resultSize++;
+                    }
+                }
+                resultArray = new Book[resultSize];
+                for (int i = 0, j = 0; i < Size; i++) {
+                    if (array[i].getName() == NameAuthor and array[i].getLastName() == LastNameAuthor
+                        and array[i].getPatronymic() == PatronymicAuthor) {
+                        resultArray[j] = array[i];
+                        j++;
+                    }
+                }
+
+                Subsubmenu(resultArray, resultSize);
+                break;
+            case listOfBooksByPublishingOffice:
+                resultSize = 0;
+                cout << "Введите название издательства" << endl;
+                cin >> NameOfPublishingOffice; 
+                for (int i = 0; i < Size; i++) {
+                    if (array[i].getPublishingOffice() == NameOfPublishingOffice) {
+                        array[i].getData();
+                        resultSize++;
+                    }
+                }
+                resultArray = new Book[resultSize];
+                for (int i = 0, j = 0; i < Size; i++) {
+                    if (array[i].getPublishingOffice() == NameOfPublishingOffice) {
+                        resultArray[j] = array[i];
+                        j++;
+                    }
+                }
+                Subsubmenu(resultArray, resultSize);
+                break;
+            case listOfBooksByYearOfIssue:
+                resultSize = 0;
+                cout << "Введите год после которого были изданы книги" << endl;
+                cin >> minYearOfIssue;
+                for (int i = 0; i < Size; i++) {
+                    if (array[i].getYear() >= minYearOfIssue) {
+                        array[i].getData();
+                        resultSize++;
+
+                    }
+                }
+                resultArray = new Book[resultSize];
+                for (int i = 0, j = 0; i < Size; i++) {
+                    if (array[i].getYear() >= minYearOfIssue) {
+                        resultArray[j] = array[i];
+                        j++;
+                    }
+                }
+                Subsubmenu(resultArray, resultSize);
+            case backToTheBeginning:
+                cout << "Возвращение в начало" << endl;
+                break;
+            default:
+                cout << "Пункт в меню не существует" << endl;
+                break;
+            }
+
+        } while (secondChoice != backToTheBeginning);
+    };
+    int main() {
+
+        setlocale(LC_ALL,"Rus");
+        cout << "Контрольная работа номер 1. Вариант 4. Бердиев Э.М. 415. Задание: Необходимо разработать класс"
+            "для указанной предметной области.Доступ к данным реализовать с помощью методов Set,Get,Show." << endl;
+        int userChoice = 0;
+        int Size = 0;
+        string fileAddress = "";
+        ifstream file;
+        int input2InInput = 0;
+        string thirdFileAdress = "";
+        ofstream thirdFile;
+        string secondName = "";
+        do {
+            cout << "Меню." << endl;
+            cout << "1 - Заполнение данных" << endl;
+            cout << "2 - Файловый ввод" << endl;
+            cout << "3 - Выход" << endl;
+            cin >> userChoice;
+
+            if (userChoice == 1)
+            {
+                cout << "Введите количество книг" << endl;
+                cin >> Size;
+            }
+            if (userChoice == 2)
+            {
+
+                cout << "Название файла:" << endl;
+                cin.get();
+                getline(cin, fileAddress);
+                file.open(fileAddress);
+                file >> Size;
+                cout << "Количество книг:" << endl;
+                cout << Size << endl;
+
+            }
+            Book* array = new Book[Size];
+
+            switch (userChoice) {
+            case keyboardInput:
+
+                for (int i = 0; i < Size; i++) {
+                    string bookname, name, lastName, patronymic, publishingoffice;
+                    int yearOfIssue;
+                    cout << "Введите информацию о книге\n" << endl;
+
+                    cout << "Введите название книги" << endl;
+                    cin >> bookname;
+                    getline(cin, bookname);
+
+                    cout << "Введите имя автора" << endl;
+                    cin >> name;
+                    getline(cin, name);
+
+                    cout << "Введите фамилию автора" << endl;
+                    cin >> lastName;
+                    getline(cin, lastName);
+
+                    cout << "Введите отчество автора" << endl;
+                    cin >>  patronymic;
+                    getline(cin, patronymic);
+
+                    cout << "Введите название издательства" << endl;
+                    cin >> publishingoffice;
+                    getline(cin, publishingoffice);
+
+                    cout << "Введите год издания книги" << endl;
+                    cin >> yearOfIssue;
+                   
+
+                    array[i] = Book(bookname, name, lastName, patronymic, publishingoffice,
+                    yearOfIssue);
+                }
+                for (int i = 0; i < Size; i++) {
+                    array[i].getData();
+                }
+                cout << "1 - Сохранить данные, заданные пользователем в новый файл. " << endl;
+                cout << "2 - Сохранить данные, заданные пользователем в существующий файл." << endl;
+                cout << "3 и любые другие цифры - Данные,заданные пользователем не сохранятся" << endl;
+                cin >> input2InInput;
+                if (input2InInput == 2) {
+                    cout << "Название файла:" << endl;
+                    cin.get();
+                    getline(cin, thirdFileAdress);
+                    thirdFile.open(thirdFileAdress, ofstream::trunc);
+                    for (int i = 0; i < Size; i++) {
+                        thirdFile << array[i].getBookName() << endl << array[i].getName() << endl << array[i].getLastName() << endl;
+                        thirdFile << array[i].getPatronymic() << endl << array[i].getPublishingOffice() << endl << array[i].getYear() << endl; 
+                    }
+                    thirdFile.close();
+                    cout << "Файл сохранён" << endl;
+                }
+                else if (input2InInput == 1) {
+                    cout << "Название файла:" << endl;
+                    cin >> secondName;
+                    thirdFile.open(secondName);
+                    for (int i = 0; i < Size; i++) {
+                        thirdFile << array[i].getBookName() << endl << array[i].getName() << endl  << array[i].getLastName() << endl;
+                        thirdFile << array[i].getPatronymic() << endl << array[i].getPublishingOffice() << endl << array[i].getYear() << endl;
+                    }
+                    cout << "Файл сохранён" << endl;
+                    thirdFile.close();
+                }
+                else {
+                    cout << "Данные будут использованны без сохранения" << endl;
+                }
+
+                Submenu(array, Size);
+                delete[] array;
+                array = nullptr;
+                break;
+            case fileInput:
+                for (int i = 0; i < Size; i++) {
+                    string bookname, name, lastName, patronymic, publishingoffice;
+                    int yearOfIssue;
+
+                    file >> bookname;
+
+                    file >> name;
+
+                    file >> lastName;
+
+                    file >> patronymic;
+
+                    file >> publishingoffice;
+
+                    file >> yearOfIssue;
+
+
+                    array[i] = Book(bookname, name, lastName, patronymic,
+                        publishingoffice, yearOfIssue);
+                }
+                for (int i = 0; i < Size; i++) {
+                    array[i].getData();
+                }
+                Submenu(array, Size);
+                delete[] array;
+                array = nullptr;
+                file.close();
+                break;
+            case quit:
+                cout << "Завершение работы" << endl;
+                break;
+                return 0;
+            default:
+                cout << "Пункт не существует" << endl;
+                break;
+            }
+        } while (userChoice != quit);
+
+        system("pause");
+    }
